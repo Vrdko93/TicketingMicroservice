@@ -1,18 +1,24 @@
 package com.synergisticit.model;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Role {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 	
-	String name; // USER, MANAGER, ADMIN
+	private String name; // USER, MANAGER, ADMIN
+	
+	@ManyToMany(mappedBy = "roles")
+	private List<Employee> employees;
 
 	public Role() {}
 

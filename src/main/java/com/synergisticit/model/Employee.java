@@ -2,24 +2,36 @@ package com.synergisticit.model;
 
 import java.util.List;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 public class Employee {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 	 
-	String	name;
-	String	email;
-	String	password;
-	List<Role> roles;
-	String department;
-	String project;
-	Long managerId;
+	private String name;
+	private String email;
+	private String password;
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+		    name = "employee_roles",
+		    joinColumns = @JoinColumn(name = "employee_id"),
+		    inverseJoinColumns = @JoinColumn(name = "role_id")
+		)
+	private List<Role> roles;
+	
+	private String department;
+	private String project;
+	private Long managerId;
 
 	public Employee() {}
 
