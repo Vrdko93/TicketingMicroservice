@@ -1,0 +1,66 @@
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+	$(document).ready(function() {
+		$("#save").click(function () {
+			$.ajax({
+				url: "/roles",
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify({
+					"name": $("#name").val()
+				}),
+				success: function (response) {
+					
+					// Clear input field
+					$("#name").prop("selectedIndex", 0);
+					
+					console.log("success");
+				},
+				error: function (xhr, status, error) {
+					console.log("error");
+				}
+			});
+		});
+		$("#get").click(function () {
+			$.ajax({
+				url: "/roles",
+				type: "GET",
+		
+				success: function (response) {
+					
+					// 🔥 Clear old rows first
+					$("table tr:not(:first)").remove();
+					
+					$.each(response, function(key, value) {
+						var row = '<tr><td>'+value.id+'</td><td>'+value.name+'</td></tr>';
+						$("table").append(row);
+					});
+	
+				},
+				error: function (xhr, status, error) {
+					console.log("error");
+				}
+			});
+		});			
+	});
+</script>
+</head>
+<body>
+<h1>Roles Page</h1>
+Name:
+<select id="name">
+    <option value="" disabled selected>Select Role</option>
+    <option value="USER">USER</option>
+    <option value="MANAGER">MANAGER</option>
+    <option value="ADMIN">ADMIN</option>
+</select></br></br>
+
+<input type="button" value="Save" id="save">
+<input type="button" value="Get" id="get"></br></br>
+<table border="1">
+	<tr><th>ID</th><th>Name</th></tr>	
+</table>
+</body>
+</html>

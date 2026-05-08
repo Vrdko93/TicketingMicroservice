@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.synergisticit.enums.Priority;
 import com.synergisticit.enums.TicketStatus;
 
@@ -46,6 +47,7 @@ public class Ticket {
     private String category;
     private String fileAttachmentPath;
 	
+    @JsonManagedReference
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
 	private List<TicketHistory>	history;
 

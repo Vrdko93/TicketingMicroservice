@@ -2,6 +2,7 @@ package com.synergisticit.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.synergisticit.enums.ActionType;
 
 import jakarta.persistence.Entity;
@@ -20,6 +21,7 @@ public class TicketHistory {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@JsonBackReference
     @ManyToOne
     @JoinColumn(name = "ticket_id")
 	private Ticket ticket;
