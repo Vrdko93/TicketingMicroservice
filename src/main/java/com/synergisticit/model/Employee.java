@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Transient;
 import jakarta.persistence.JoinColumn;
 
 @Entity
@@ -28,6 +29,9 @@ public class Employee {
 		    inverseJoinColumns = @JoinColumn(name = "role_id")
 		)
 	private List<Role> roles;
+	
+	@Transient
+	private Long roleId;
 	
 	private String department;
 	private String project;
@@ -110,5 +114,12 @@ public class Employee {
 
 	public void setManagerId(Long managerId) {
 		this.managerId = managerId;
+	}
+	public Long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
 	}
 }

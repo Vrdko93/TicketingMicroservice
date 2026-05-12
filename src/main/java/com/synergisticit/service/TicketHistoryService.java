@@ -36,7 +36,42 @@ public class TicketHistoryService {
 		return historyRepository.findByTicket(ticket);
 	}
 
+    public TicketHistory getHistoryById(Long id) {
+
+        return historyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("History not found"));
+    }
+	
 	public List<TicketHistory> getAllHistory() {
-		return historyRepository.findAll();
+	    List<TicketHistory> list = historyRepository.findAll();
+
+	    for (TicketHistory h : list) {
+
+	        if (h.getTicket() != null) {
+	            h.setTicketId(h.getTicket().getId());
+	        }
+	    }
+
+	    return list;
+	}
+	
+	public TicketHistory updateHistory(Long id, TicketHistory updatedHistory) {
+
+	    TicketHistory existingHistory = historyRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("History not found"));
+
+	    existingHistory.setAction(updatedHistory.getAction());
+	    existingHistory.setComments(updatedHistory.getComments());
+	    existingHistory.setActionDate(updatedHistory.getActionDate());
+
+	    return historyRepository.save(existingHistory);
+	}
+	
+	public void deleteHistory(Long id) {
+
+		TicketHistory history = historyRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("History not found"));
+
+	    historyRepository.delete(history);
 	}
 }

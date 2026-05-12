@@ -30,6 +30,24 @@ public class TicketService {
 	public TicketService() {}
 	
 	public Ticket createTicket(Ticket ticket) {
+		
+		// Created By
+		Employee employee = employeeRepository.findById(ticket.getCreatedById())
+		            .orElseThrow(() ->
+		                    new RuntimeException("Employee not found"));
+
+		ticket.setCreatedBy(employee);
+		
+	    // Assignee
+	    if (ticket.getAssigneeId() != null) {
+
+	        Employee assignee = employeeRepository
+	                .findById(ticket.getAssigneeId())
+	                .orElseThrow(() ->
+	                        new RuntimeException("Assignee not found"));
+
+	        ticket.setAssignee(assignee);
+	    }
 
 		ticket.setStatus(TicketStatus.OPEN);
 	    ticket.setCreationDate(LocalDateTime.now());
@@ -40,6 +58,49 @@ public class TicketService {
 
 	    return saved;
 	}
+	
+    public Ticket updateTicket(Long id, Ticket updatedTicket) {
+
+        Ticket existingTicket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        existingTicket.setTitle(updatedTicket.getTitle());
+        existingTicket.setDescription(updatedTicket.getDescription());
+        existingTicket.setPriority(updatedTicket.getPriority());
+        existingTicket.setStatus(updatedTicket.getStatus());
+        existingTicket.setCategory(updatedTicket.getCategory());
+        existingTicket.setFileAttachmentPath(updatedTicket.getFileAttachmentPath());
+
+        // update createdBy
+        if (updatedTicket.getCreatedById() != null) {
+
+            Employee createdBy = employeeRepository
+                    .findById(updatedTicket.getCreatedById())
+                    .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+            existingTicket.setCreatedBy(createdBy);
+        }
+
+        // update assignee
+        if (updatedTicket.getAssigneeId() != null) {
+
+            Employee assignee = employeeRepository
+                    .findById(updatedTicket.getAssigneeId())
+                    .orElseThrow(() -> new RuntimeException("Assignee not found"));
+
+            existingTicket.setAssignee(assignee);
+        }
+
+        return ticketRepository.save(existingTicket);
+    }
+	
+    public void deleteTicket(Long id) {
+
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        ticketRepository.delete(ticket);
+    }
 
 	public Ticket assignTicket(Long ticketId, Long employeeId) {
 

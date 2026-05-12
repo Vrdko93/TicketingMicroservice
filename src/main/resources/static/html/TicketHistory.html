@@ -14,7 +14,7 @@
 					$("table tr:not(:first)").remove();
 					
 					$.each(response, function(key, value) {
-						var row = '<tr><td>'+value.id+'</td><td>'+value.action+'</td><td>'+value.actionDate+'</td><td>'+value.comments+'</td></tr>';
+						var row = '<tr><td>'+value.id+'</td><td>'+value.action+'</td><td>'+value.actionDate+'</td><td>'+value.comments+'</td><td>'+value.ticketId+'</td><td>'+(value.actionBy ? value.actionBy.name : '')+'</td></tr>';
 						$("table").append(row);
 					});
 	
@@ -31,7 +31,7 @@
 <h1>Ticket History Page</h1>
 <input type="button" value="Get" id="get"></br></br>
 <table border="1">
-	<tr><th>ID</th><th>Action</th><th>ActionDate</th><th>Comments</th></tr>	
+	<tr><th>ID</th><th>Action</th><th>ActionDate</th><th>Comments</th><th>Ticket ID</th><th>Action By</th></tr>	
 </table>
 </body>
 </html>

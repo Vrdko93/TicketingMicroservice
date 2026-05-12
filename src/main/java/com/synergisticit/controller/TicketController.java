@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,21 +32,25 @@ public class TicketController {
 	
 	@PostMapping("/tickets")
 	public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
+		
 		return ResponseEntity.ok(ticketService.createTicket(ticket));
 	}
 
 	@GetMapping("/tickets")
 	public ResponseEntity<List<Ticket>> getAllTickets() {
+		
 	    return ResponseEntity.ok(ticketService.getAllTickets());
 	}
 
 	@GetMapping("/tickets/{id}")
 	public ResponseEntity<Ticket> getTicket(@PathVariable Long id) {
+		
 	    return ResponseEntity.ok(ticketService.getTicketById(id));
 	}
 
 	@PutMapping("/tickets/{id}/assign")
 	public ResponseEntity<Ticket> assignTicket(@PathVariable Long id, @RequestParam Long employeeId) {
+		
 	    return ResponseEntity.ok(ticketService.assignTicket(id, employeeId));
 	}
 
@@ -58,5 +63,21 @@ public class TicketController {
 		Employee employee = employeeService.getEmployeeById(employeeId);
 
 	    return ResponseEntity.ok( ticketService.updateStatus(id, status, comment, employee));
+	}
+	
+	@PutMapping("/tickets/{id}")
+	public ResponseEntity<Ticket> updateTicket(@PathVariable Long id, @RequestBody Ticket ticket) {
+
+		Ticket updatedTicket = ticketService.updateTicket(id, ticket);
+		
+		return ResponseEntity.ok(updatedTicket);
+	}
+	
+	@DeleteMapping("/tickets/{id}")
+	public ResponseEntity<String> deleteTicket(@PathVariable Long id) {
+
+	    ticketService.deleteTicket(id);
+	    
+	    return ResponseEntity.ok("Ticket deleted");
 	}
 }

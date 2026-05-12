@@ -3,6 +3,17 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 	$(document).ready(function() {
+		$.get("/roles", function(data) {
+
+		    $.each(data, function(i, role) {
+
+		        $("#role").append(
+		            `<option value="${role.id}">
+		                ${role.name}
+		            </option>`
+		        );
+			});
+		});
 		$("#save").click(function () {
 			$.ajax({
 				url: "/employees",
@@ -12,6 +23,7 @@
 					"name": $("#name").val(),
 					"email": $("#email").val(),
 					"password": $("#password").val(),
+					"roleId": $("#role").val(),
 					"department": $("#department").val(),
 					"project": $("#project").val(),
 					"managerId": $("#managerId").val()
@@ -22,6 +34,7 @@
 					$("#name").val("");
 					$("#email").val("");
 					$("#password").val("");
+					$("#role").prop("selectedIndex", 0);
 					$("#department").val("");
 					$("#project").val("");
 					$("#managerId").val("");
@@ -44,9 +57,12 @@
 					$("table tr:not(:first)").remove();
 					
 					$.each(response, function(key, value) {
-						var row = '<tr><td>'+value.id+'</td><td>'+value.name+'</td><td>'+value.email+'</td><td>'+value.password+'</td><td>'+						(value.roles && value.roles.length > 0
-						        ? value.roles.map(r => r.name).join(", ")
-						        : "")+'</td><td>'+value.department+'</td><td>'+value.project+'</td><td>'+value.managerId+'</td></tr>';
+						var row = '<tr><td>'+value.id+'</td><td>'+value.name+
+							'</td><td>'+value.email+'</td><td>'+value.password+'</td><td>'+						
+							(value.roles && value.roles.length > 0 ? value.roles.map(r => r.name).join(", "): "")+
+							'</td><td>'+value.department+'</td><td>'+value.project+'</td><td>'+value.managerId+
+							'</td><td>'+'<button onclick="editEmployee('+value.id+')">Edit</button>'+
+							'<button onclick="deleteEmployee('+value.id+')">Delete</button>'+'</td></tr>';
 						$("table").append(row);
 					});
 	
@@ -55,21 +71,99 @@
 					console.log("error");
 				}
 			});
-		});			
+		});
+		$("#update").click(function () {
+
+		    var id = $("#employeeId").val();
+
+		    $.ajax({
+
+		        url: "/employees/" + id,
+		        type: "PUT",
+		        contentType: "application/json",
+
+		        data: JSON.stringify({
+
+		            "name": $("#name").val(),
+		            "email": $("#email").val(),
+					"password": $("#password").val(),
+					"roleId": $("#role").val(),
+		            "department": $("#department").val(),
+		            "project": $("#project").val(),
+					"managerId": $("#managerId").val()
+		        }),
+
+		        success: function () {
+		            
+					// Clear text inputs
+					$("#name").val("");
+					$("#email").val("");
+					$("#password").val("");
+					$("#role").prop("selectedIndex", 0);
+					$("#department").val("");
+					$("#project").val("");
+					$("#managerId").val("");
+					
+					alert("Employee updated");
+
+		            $("#get").click();
+		        }
+		    });
+		});					
 	});
+	
+	function editEmployee(id) {
+
+	    $.get("/employees/" + id, function(employee) {
+
+	        $("#employeeId").val(employee.id);
+	        $("#name").val(employee.name);
+	        $("#email").val(employee.email);
+			$("#password").val(employee.password);
+			
+			if(employee.roles && employee.roles.length > 0) {
+
+			    $("#role").val(employee.roles[0].id);
+			}
+			
+			$("#department").val(employee.department);
+			$("#project").val(employee.project);
+			$("#managerId").val(employee.managerId);
+	    });
+	}
+	function deleteEmployee(id) {
+
+	    $.ajax({
+	        url: "/employees/" + id,
+	        type: "DELETE",
+
+	        success: function() {
+
+				alert("Employee deleted");
+	            $("#get").click();
+	        }
+	    });
+	}
 </script>
 </head>
 <body>
 <h1>Employees Page</h1>
+<input type="hidden" id="employeeId">
 Name: <input type="text" id="name"></br></br>
 Email: <input type="text" id="email"></br></br>
 Password: <input type="password" id="password"></br></br>
+Role:
+<select id="role">
+    <option value="" disabled selected>Select Role</option>
+</select></br></br>
 Department: <input type="text" id="department"></br></br>
 Project: <input type="text" id="project"></br></br>
 Manager ID: <input type="text" id="managerId"></br></br>
 
+<input type="button" value="Get" id="get">
 <input type="button" value="Save" id="save">
-<input type="button" value="Get" id="get"></br></br>
+<input type="button" value="Update" id="update"></br></br>
+
 <table border="1">
 	<tr><th>ID</th><th>Name</th><th>Email</th><th>Password</th><th>Role</th><th>Department</th><th>Project</th><th>Manager ID</th></tr>	
 </table>

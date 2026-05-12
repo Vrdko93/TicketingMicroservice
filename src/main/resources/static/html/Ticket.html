@@ -3,6 +3,23 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 	$(document).ready(function() {
+		$.get("/employees", function(data) {
+
+		    $.each(data, function(i, emp) {
+
+		        $("#createdBy").append(
+		            `<option value="${emp.id}">
+		                ${emp.name}
+		            </option>`
+		        );
+				$("#assignee").append(
+				    `<option value="${emp.id}">
+				        ${emp.name}
+				    </option>`
+				);
+		    });
+
+		});
 		$("#save").click(function () {
 			$.ajax({
 				url: "/tickets",
@@ -11,6 +28,8 @@
 				data: JSON.stringify({
 					"title": $("#title").val(),
 					"description": $("#description").val(),
+					"createdById": $("#createdBy").val(),
+			        "assigneeId": $("#assignee").val(),
 					"priority": $("#priority").val(),
 					"status": $("#status").val(),
 					"category": $("#category").val(),
@@ -23,7 +42,8 @@
 					    $("#description").val("");
 					    $("#category").val("");
 					    $("#fileAttachmentPath").val("");
-					    $("#assignee").val("");
+					    $("#createdBy").val("");
+						$("#assignee").val("");
 
 					    // Reset dropdowns
 					    $("#priority").prop("selectedIndex", 0);
@@ -50,7 +70,14 @@
 					$("table tr:not(:first)").remove();
 					
 					$.each(response, function(key, value) {
-						var row = '<tr><td>'+value.id+'</td><td>'+value.title+'</td><td>'+value.description+'</td><td>'+value.priority+'</td><td>'+value.status+'</td><td>'+value.creationDate+'</td><td>'+value.category+'</td><td>'+value.fileAttachmentPath+'</td><td>'+(value.createdBy ? value.createdBy.name : '')+'</td><td>'+(value.assignee ? value.assignee.name : '')+'</td></tr>';
+						var row = '<tr><td>'+value.id+'</td><td>'+value.title+'</td><td>'+value.description+
+							'</td><td>'+value.priority+'</td><td>'+value.status+'</td><td>'+value.creationDate+
+							'</td><td>'+value.category+'</td><td>'+value.fileAttachmentPath+'</td><td>'+
+							(value.createdBy ? value.createdBy.name : '')+'</td><td>'+
+							(value.assignee ? value.assignee.name : '')+'</td><td>'+
+							'<button id="edit" onclick="editTicket('+value.id+')">Edit</button>'+
+							'<button id="delete" onclick="deleteTicket('+value.id+')">Delete</button>'+'</td></tr>';
+						
 						$("table").append(row);
 					});
 	
@@ -59,14 +86,95 @@
 					console.log("error");
 				}
 			});
-		});			
+		});
+		
+		$("#update").click(function () {
+
+		    var id = $("#ticketId").val();
+
+		    $.ajax({
+
+		        url: "/tickets/" + id,
+		        type: "PUT",
+		        contentType: "application/json",
+
+		        data: JSON.stringify({
+
+		            "title": $("#title").val(),
+		            "description": $("#description").val(),
+					"createdById": $("#createdBy").val(),
+					"assigneeId": $("#assignee").val(),
+		            "priority": $("#priority").val(),
+		            "status": $("#status").val(),
+					"category": $("#category").val(),
+					"fileAttachmentPath": $("#fileAttachmentPath").val()
+		        }),
+
+		        success: function () {
+		            
+					// Clear text inputs
+					$("#title").val("");
+					$("#description").val("");
+					$("#category").val("");
+					$("#fileAttachmentPath").val("");
+					$("#createdBy").val("");
+					$("#assignee").val("");
+
+					// Reset dropdowns
+					$("#priority").prop("selectedIndex", 0);
+					$("#status").prop("selectedIndex", 0);
+					
+					alert("Ticket updated");
+
+		            $("#get").click();
+		        }
+		    });
+		});		
 	});
+	
+	function editTicket(id) {
+
+	    $.get("/tickets/" + id, function(ticket) {
+
+	        $("#ticketId").val(ticket.id);
+	        $("#title").val(ticket.title);
+	        $("#description").val(ticket.description);
+			$("#createdBy").val(ticket.createdBy);
+			$("#assignee").val(ticket.assignee);
+			$("#priority").val(ticket.priority);
+			$("#status").val(ticket.status);
+			$("#category").val(ticket.category);
+			$("#fileAttachmentPath").val(ticket.fileAttachmentPath);
+	    });
+	}
+	function deleteTicket(id) {
+
+	    $.ajax({
+	        url: "/tickets/" + id,
+	        type: "DELETE",
+
+	        success: function() {
+
+				alert("Ticket deleted");
+	            $("#get").click();
+	        }
+	    });
+	}
 </script>
 </head>
 <body>
 <h1>Tickets Page</h1>
+<input type="hidden" id="ticketId">
 Title: <input type="text" id="title"></br></br>
 Description: <input type="text" id="description"></br></br>
+Created By:
+<select id="createdBy">
+	<option value="" disabled selected>Select Employee</option>
+</select></br></br>
+Assignee:
+<select id="assignee">
+	<option value="" disabled selected>Select Employee</option>
+</select></br></br>
 Priority:
 <select id="priority">
 	<option value="" disabled selected>Select Priority</option>
@@ -89,9 +197,10 @@ Status:
 Category: <input type="text" id="category"></br></br>
 File Attachment Path: <input type="text" id="fileAttachmentPath"></br></br>
 
-
+<input type="button" value="Get" id="get">
 <input type="button" value="Save" id="save">
-<input type="button" value="Get" id="get"></br></br>
+<input type="button" value="Update" id="update"></br></br>
+
 <table border="1">
 	<tr><th>ID</th><th>Title</th><th>Description</th><th>Priority</th><th>Status</th><th>Creation Date</th><th>Category</th><th>File Attachment Path</th><th>Created By</th><th>Assignee</th></tr>	
 </table>

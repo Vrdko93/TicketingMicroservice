@@ -12,8 +12,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 
 import java.util.List;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.synergisticit.enums.Priority;
@@ -30,12 +34,20 @@ public class Ticket {
 	private String description;
 	
 	@ManyToOne
-	@JoinColumn(name = "created_by")
+	@JoinColumn(name = "created_by", nullable = true)
+	@OnDelete(action = OnDeleteAction.SET_NULL)
 	private Employee createdBy;
 	
+	@Transient
+	private Long createdById;
+	
     @ManyToOne
-    @JoinColumn(name = "assignee_id")
+    @JoinColumn(name = "assignee_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
 	private Employee assignee;
+    
+    @Transient
+    private Long assigneeId;
     
     @Enumerated(EnumType.STRING)
     private Priority priority;             // LOW, MEDIUM, HIGH
@@ -140,5 +152,21 @@ public class Ticket {
 
 	public void setHistory(List<TicketHistory> history) {
 		this.history = history;
+	}
+	
+	public Long getCreatedById() {
+	    return createdById;
+	}
+	
+	public void setCreatedById(Long createdById) {
+	    this.createdById = createdById;
+	}
+	
+	public Long getAssigneeId() {
+	    return assigneeId;
+	}
+
+	public void setAssigneeId(Long assigneeId) {
+	    this.assigneeId = assigneeId;
 	}
 }

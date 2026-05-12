@@ -12,4 +12,6 @@ import com.synergisticit.model.TicketHistory;
 public interface TicketHistoryRepository extends JpaRepository<TicketHistory, Long> {
 
 	List<TicketHistory> findByTicket(Ticket ticket);
+
+	List<TicketHistory> findByActionById(Long id);
 }
