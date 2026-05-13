@@ -61,8 +61,8 @@
 							'</td><td>'+value.email+'</td><td>'+value.password+'</td><td>'+						
 							(value.roles && value.roles.length > 0 ? value.roles.map(r => r.name).join(", "): "")+
 							'</td><td>'+value.department+'</td><td>'+value.project+'</td><td>'+value.managerId+
-							'</td><td>'+'<button onclick="editEmployee('+value.id+')">Edit</button>'+
-							'<button onclick="deleteEmployee('+value.id+')">Delete</button>'+'</td></tr>';
+							'</td><td>'+'<button style="background-color: orange; color: white;" onclick="editEmployee('+value.id+')">Edit</button>'+
+							'<button style="background-color: red; color: white;" onclick="deleteEmployee('+value.id+')">Delete</button>'+'</td></tr>';
 						$("table").append(row);
 					});
 	
@@ -160,9 +160,9 @@ Department: <input type="text" id="department"></br></br>
 Project: <input type="text" id="project"></br></br>
 Manager ID: <input type="text" id="managerId"></br></br>
 
-<input type="button" value="Get" id="get">
-<input type="button" value="Save" id="save">
-<input type="button" value="Update" id="update"></br></br>
+<input style="background-color: green; color: white;" type="button" value="Get" id="get">
+<input style="background-color: orangered; color: white;" type="button" value="Save" id="save">
+<input style="background-color: blue; color: white;" type="button" value="Update" id="update"></br></br>
 
 <table border="1">
 	<tr><th>ID</th><th>Name</th><th>Email</th><th>Password</th><th>Role</th><th>Department</th><th>Project</th><th>Manager ID</th></tr>	

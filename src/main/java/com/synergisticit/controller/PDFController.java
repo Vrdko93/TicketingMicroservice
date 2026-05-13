@@ -15,59 +15,52 @@ import com.synergisticit.service.PDFService;
 @RestController
 public class PDFController {
 
-	  @Value("${pdf.save.path}")
-	    private String pdfSavePath;
+	@Value("${pdf.save.path}")
+	private String pdfSavePath;
 
-	    @Autowired
-	    private PDFService pdfService;
+	@Autowired
+	private PDFService pdfService;
 	    
-	    @GetMapping("/generateAndSave/{content}")
-	    public ResponseEntity<String> generateAndSavePdf(@PathVariable String content) {
+	@GetMapping("/generateAndSave/{content}")
+	public ResponseEntity<String> generateAndSavePdf(@PathVariable String content) {
 
-	        try {
+		try {
 
-	            // Call service method
-	            String response = pdfService.generateAndSavePdf(content, pdfSavePath + "/demo.pdf");
+			// Call service method
+	        String response = pdfService.generateAndSavePdf(content, pdfSavePath + "/demo.pdf");
 
-	            // Set response headers
-	            HttpHeaders headers = new HttpHeaders();
-	            headers.setContentType(MediaType.TEXT_PLAIN);
+	        // Set response headers
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.TEXT_PLAIN);
 
-	            // Return success response
-	            return ResponseEntity
-	                    .ok()
-	                    .headers(headers)
-	                    .body("OK");
+	        // Return success response
+	        return ResponseEntity.ok().headers(headers).body("OK");
 
-	        } catch (Exception e) {
+	    } catch (Exception e) {
 
-	            // Print exception
-	            System.out.println(e.getMessage());
+	    	// Print exception
+	        System.out.println(e.getMessage());
 
-	            // Return error response
-	            return ResponseEntity
-	                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body("Error generating PDF");
+	        // Return error response
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating PDF");
 	        }
 	    }
 
-//	    @GetMapping("/generateAndSendPdf/{content}/{email}")
-//	    public ResponseEntity<String> generateAndSendPdf(@PathVariable String content, @PathVariable String email) {
-//
-//	        try {
-//
-//	            // Call service method
-//	            String response = pdfService.generatePdfAndSendEmail(content, email, pdfSavePath);
-//
-//	            return ResponseEntity.ok(response);
-//
-//	        } catch (Exception e) {
-//
-//	            System.out.println(e.getMessage());
-//
-//	            return ResponseEntity
-//	                    .status(500)
-//	                    .body("Error generating PDF or sending email.");
-//	        }
-//	    }
+	@GetMapping("/generateAndSendPdf/{content}/{email}")
+	public ResponseEntity<String> generateAndSendPdf(@PathVariable String content, @PathVariable String email) {
+
+		try {
+
+			// Call service method
+	        String response = pdfService.generatePdfAndSendEmail(content, email, pdfSavePath);
+
+	        return ResponseEntity.ok(response);
+
+	    } catch (Exception e) {
+
+	    	System.out.println(e.getMessage());
+
+	        return ResponseEntity.status(500).body("Error generating PDF or sending email.");
+	    }
+	}
 }

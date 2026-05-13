@@ -75,8 +75,8 @@
 							'</td><td>'+value.category+'</td><td>'+value.fileAttachmentPath+'</td><td>'+
 							(value.createdBy ? value.createdBy.name : '')+'</td><td>'+
 							(value.assignee ? value.assignee.name : '')+'</td><td>'+
-							'<button id="edit" onclick="editTicket('+value.id+')">Edit</button>'+
-							'<button id="delete" onclick="deleteTicket('+value.id+')">Delete</button>'+'</td></tr>';
+							'<button style="background-color: orange; color: white;" onclick="editTicket('+value.id+')">Edit</button>'+
+							'<button style="background-color: red; color: white;" onclick="deleteTicket('+value.id+')">Delete</button>'+'</td></tr>';
 						
 						$("table").append(row);
 					});
@@ -139,8 +139,8 @@
 	        $("#ticketId").val(ticket.id);
 	        $("#title").val(ticket.title);
 	        $("#description").val(ticket.description);
-			$("#createdBy").val(ticket.createdBy);
-			$("#assignee").val(ticket.assignee);
+			$("#createdBy").val(ticket.createdBy.id);
+			$("#assignee").val(ticket.assignee.id);
 			$("#priority").val(ticket.priority);
 			$("#status").val(ticket.status);
 			$("#category").val(ticket.category);
@@ -197,9 +197,9 @@ Status:
 Category: <input type="text" id="category"></br></br>
 File Attachment Path: <input type="text" id="fileAttachmentPath"></br></br>
 
-<input type="button" value="Get" id="get">
-<input type="button" value="Save" id="save">
-<input type="button" value="Update" id="update"></br></br>
+<input style="background-color: green; color: white;" type="button" value="Get" id="get">
+<input style="background-color: orangered; color: white;" type="button" value="Save" id="save">
+<input style="background-color: blue; color: white;" type="button" value="Update" id="update"></br></br>
 
 <table border="1">
 	<tr><th>ID</th><th>Title</th><th>Description</th><th>Priority</th><th>Status</th><th>Creation Date</th><th>Category</th><th>File Attachment Path</th><th>Created By</th><th>Assignee</th></tr>	
