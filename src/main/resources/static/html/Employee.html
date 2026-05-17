@@ -61,8 +61,8 @@
 							'</td><td>'+value.email+'</td><td>'+value.password+'</td><td>'+						
 							(value.roles && value.roles.length > 0 ? value.roles.map(r => r.name).join(", "): "")+
 							'</td><td>'+value.department+'</td><td>'+value.project+'</td><td>'+value.managerId+
-							'</td><td>'+'<button style="background-color: orange; color: white;" onclick="editEmployee('+value.id+')">Edit</button>'+
-							'<button style="background-color: red; color: white;" onclick="deleteEmployee('+value.id+')">Delete</button>'+'</td></tr>';
+							'</td><td>'+'<button style="background-color: orange;" onclick="editEmployee('+value.id+')">Edit</button>'+
+							'<button style="background-color: red;" onclick="deleteEmployee('+value.id+')">Delete</button>'+'</td></tr>';
 						$("table").append(row);
 					});
 	

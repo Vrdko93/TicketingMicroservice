@@ -1,11 +1,18 @@
 package com.synergisticit.service;
 
+import org.springframework.core.io.ByteArrayResource;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.synergisticit.enums.ActionType;
 import com.synergisticit.enums.TicketStatus;
 import com.synergisticit.model.Employee;
@@ -14,6 +21,8 @@ import com.synergisticit.model.TicketHistory;
 import com.synergisticit.repository.EmployeeRepository;
 import com.synergisticit.repository.TicketHistoryRepository;
 import com.synergisticit.repository.TicketRepository;
+
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class TicketService {
@@ -26,6 +35,9 @@ public class TicketService {
 	
 	@Autowired
     private TicketHistoryRepository historyRepository;
+	
+	@Autowired
+	private JavaMailSender mailSender;
 
 	public TicketService() {}
 	
@@ -169,4 +181,56 @@ public class TicketService {
 	        default -> ActionType.CREATED;
 	      };
 	  }
+	  
+	  public ByteArrayOutputStream generateTicketPdf(Ticket ticket) throws Exception {
+
+		    Document document = new Document();
+
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		    PdfWriter.getInstance(document, baos);
+
+		    document.open();
+
+		    document.add(new Paragraph("Ticket Details"));
+		    document.add(new Paragraph("ID: " + ticket.getId()));
+		    document.add(new Paragraph("Title: " + ticket.getTitle()));
+		    document.add(new Paragraph("Description: " + ticket.getDescription()));
+		    document.add(new Paragraph("Status: " + ticket.getStatus()));
+		    document.add(new Paragraph("Priority: " + ticket.getPriority()));
+
+		    if(ticket.getCreatedBy() != null) {
+		        document.add(new Paragraph("Created By: " + ticket.getCreatedBy().getName()));
+		    }
+
+		    if(ticket.getAssignee() != null) {
+		        document.add(new Paragraph("Assignee: " + ticket.getAssignee().getName()));
+		    }
+
+		    document.close();
+
+		    return baos;
+		}
+	  
+	  public void sendTicketEmail(Long id) throws Exception {
+
+		    Ticket ticket = ticketRepository.findById(id)
+		            .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+		    ByteArrayOutputStream pdf = generateTicketPdf(ticket);
+
+		    MimeMessage message = mailSender.createMimeMessage();
+		    MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+		    helper.setTo(ticket.getCreatedBy().getEmail()); // or assignee email
+		    helper.setSubject("Ticket Details - " + ticket.getId());
+		    helper.setText("Please find ticket details attached.");
+
+		    helper.addAttachment(
+		            "ticket_" + ticket.getId() + ".pdf",
+		            new ByteArrayResource(pdf.toByteArray())
+		    );
+
+		    mailSender.send(message);
+		}
 }

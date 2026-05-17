@@ -75,8 +75,11 @@
 							'</td><td>'+value.category+'</td><td>'+value.fileAttachmentPath+'</td><td>'+
 							(value.createdBy ? value.createdBy.name : '')+'</td><td>'+
 							(value.assignee ? value.assignee.name : '')+'</td><td>'+
-							'<button style="background-color: orange; color: white;" onclick="editTicket('+value.id+')">Edit</button>'+
-							'<button style="background-color: red; color: white;" onclick="deleteTicket('+value.id+')">Delete</button>'+'</td></tr>';
+							'<button style="background-color: orange;" onclick="editTicket('+value.id+')">Edit</button>'+
+							'<button style="background-color: red;" onclick="deleteTicket('+value.id+')">Delete</button>'+
+							'<button style="background-color:lightgreen;" onclick="downloadTicket('+value.id+')">Download</button>'+
+							'<button style="background-color:cyan;" onclick="sendTicketEmail('+value.id+')">Send Email</button>'
+							'</td></tr>';
 						
 						$("table").append(row);
 					});
@@ -147,6 +150,7 @@
 			$("#fileAttachmentPath").val(ticket.fileAttachmentPath);
 	    });
 	}
+	
 	function deleteTicket(id) {
 
 	    $.ajax({
@@ -157,6 +161,25 @@
 
 				alert("Ticket deleted");
 	            $("#get").click();
+	        }
+	    });
+	}
+	
+	function downloadTicket(id) {
+
+	    window.location.href = "/tickets/download/" + id;
+	}
+	
+	function sendTicketEmail(id) {
+
+	    $.ajax({
+	        url: "/tickets/" + id + "/email",
+	        type: "POST",
+	        success: function(response) {
+	            alert("Email sent successfully!");
+	        },
+	        error: function() {
+	            alert("Error sending email");
 	        }
 	    });
 	}

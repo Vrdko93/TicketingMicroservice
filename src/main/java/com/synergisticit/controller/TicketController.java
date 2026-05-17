@@ -1,8 +1,11 @@
 package com.synergisticit.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,5 +82,27 @@ public class TicketController {
 	    ticketService.deleteTicket(id);
 	    
 	    return ResponseEntity.ok("Ticket deleted");
+	}
+	
+	@GetMapping("/tickets/download/{id}")
+	public ResponseEntity<byte[]> downloadTicket(@PathVariable Long id) throws Exception {
+
+	    Ticket ticket = ticketService.getTicketById(id);
+
+	    ByteArrayOutputStream baos = ticketService.generateTicketPdf(ticket);
+
+	    return ResponseEntity.ok()
+	            .header(HttpHeaders.CONTENT_DISPOSITION,
+	                    "attachment; filename=ticket_" + id + ".pdf")
+	            .contentType(MediaType.APPLICATION_PDF)
+	            .body(baos.toByteArray());
+	}
+	
+	@PostMapping("/tickets/{id}/email")
+	public ResponseEntity<String> sendTicketEmail(@PathVariable Long id) throws Exception {
+
+	    ticketService.sendTicketEmail(id);
+
+	    return ResponseEntity.ok("Email sent successfully");
 	}
 }
