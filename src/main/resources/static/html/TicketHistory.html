@@ -1,5 +1,10 @@
 <html>
 <head>
+	<style>
+		input[type="button"] {
+		    cursor: pointer;
+		}
+	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 	$(document).ready(function() {
@@ -29,7 +34,7 @@
 </head>
 <body>
 <h1>Ticket History Page</h1>
-<input type="button" value="Get" id="get"></br></br>
+<input style="background-color: green; color: white;" type="button" value="Get" id="get"></br></br>
 <table border="1">
 	<tr><th>ID</th><th>Action</th><th>ActionDate</th><th>Comments</th><th>Ticket ID</th><th>Action By</th></tr>	
 </table>

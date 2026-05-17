@@ -59,14 +59,25 @@ public class TicketService {
 	                        new RuntimeException("Assignee not found"));
 
 	        ticket.setAssignee(assignee);
+	        ticket.setStatus(TicketStatus.ASSIGNED);
 	    }
+	    else {
 
-		ticket.setStatus(TicketStatus.OPEN);
+	    	ticket.setStatus(TicketStatus.OPEN);
+
+	    }
 	    ticket.setCreationDate(LocalDateTime.now());
-
+	    
 	    Ticket saved = ticketRepository.save(ticket);
+	    
+	    if(saved.getAssignee() != null) {
 
-	    addHistory(saved, ActionType.CREATED, ticket.getCreatedBy(), "Ticket created");
+	        addHistory(saved, ActionType.ASSIGNED, saved.getCreatedBy(), "Ticket assigned to " +saved.getAssignee().getName());
+
+	    } else {
+
+	        addHistory(saved, ActionType.CREATED, saved.getCreatedBy(), "Ticket created");
+	    }
 
 	    return saved;
 	}
@@ -102,8 +113,47 @@ public class TicketService {
 
             existingTicket.setAssignee(assignee);
         }
+        
+        Ticket updated = ticketRepository.save(existingTicket);
+        
+        ActionType actionType = null;
 
-        return ticketRepository.save(existingTicket);
+        switch(updated.getStatus()) {
+
+            case APPROVED:
+                actionType = ActionType.APPROVED;
+                break;
+
+            case REJECTED:
+                actionType = ActionType.REJECTED;
+                break;
+
+            case ASSIGNED:
+                actionType = ActionType.ASSIGNED;
+                break;
+
+            case RESOLVED:
+                actionType = ActionType.RESOLVED;
+                break;
+
+            case CLOSED:
+                actionType = ActionType.CLOSED;
+                break;
+
+            case REOPENED:
+                actionType = ActionType.REOPENED;
+                break;
+
+            default:
+                break;
+        }
+        
+        if(actionType != null) {
+
+            addHistory(updated, actionType, updated.getAssignee(), "Ticket status changed to " + updated.getStatus());
+        }
+
+        return updatedTicket;
     }
 	
     public void deleteTicket(Long id) {

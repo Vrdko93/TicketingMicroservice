@@ -1,5 +1,13 @@
 <html>
 <head>
+	<style>
+		button {
+		    cursor: pointer;
+		}
+		input[type="button"] {
+		    cursor: pointer;
+		}
+	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 	$(document).ready(function() {
@@ -39,7 +47,8 @@
 					$("#project").val("");
 					$("#managerId").val("");
 					
-					console.log("success");
+					alert("Employee created");
+					$("#get").click();
 				},
 				error: function (xhr, status, error) {
 					console.log("error");
@@ -62,7 +71,7 @@
 							(value.roles && value.roles.length > 0 ? value.roles.map(r => r.name).join(", "): "")+
 							'</td><td>'+value.department+'</td><td>'+value.project+'</td><td>'+value.managerId+
 							'</td><td>'+'<button style="background-color: orange;" onclick="editEmployee('+value.id+')">Edit</button>'+
-							'<button style="background-color: red;" onclick="deleteEmployee('+value.id+')">Delete</button>'+'</td></tr>';
+							'<button style="background-color: red; color: white;" onclick="deleteEmployee('+value.id+')">Delete</button>'+'</td></tr>';
 						$("table").append(row);
 					});
 	
@@ -105,7 +114,6 @@
 					$("#managerId").val("");
 					
 					alert("Employee updated");
-
 		            $("#get").click();
 		        }
 		    });

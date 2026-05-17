@@ -1,5 +1,13 @@
 <html>
 <head>
+	<style>
+		button {
+		    cursor: pointer;
+		}
+		input[type="button"] {
+		    cursor: pointer;
+		}
+	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 	$(document).ready(function() {
@@ -28,8 +36,8 @@
 				data: JSON.stringify({
 					"title": $("#title").val(),
 					"description": $("#description").val(),
-					"createdById": $("#createdBy").val(),
-			        "assigneeId": $("#assignee").val(),
+					"createdById": $("#createdBy").val() || null,
+			        "assigneeId": $("#assignee").val() || null,
 					"priority": $("#priority").val(),
 					"status": $("#status").val(),
 					"category": $("#category").val(),
@@ -49,10 +57,8 @@
 					    $("#priority").prop("selectedIndex", 0);
 					    $("#status").prop("selectedIndex", 0);
 
-					    console.log("success");
-					
-					
-					console.log("success");
+						alert("Ticket created");
+						$("#get").click();
 				},
 				error: function (xhr, status, error) {
 					console.log("error");
@@ -65,7 +71,7 @@
 				type: "GET",
 		
 				success: function (response) {
-					
+
 					// 🔥 Clear old rows first
 					$("table tr:not(:first)").remove();
 					
@@ -76,7 +82,7 @@
 							(value.createdBy ? value.createdBy.name : '')+'</td><td>'+
 							(value.assignee ? value.assignee.name : '')+'</td><td>'+
 							'<button style="background-color: orange;" onclick="editTicket('+value.id+')">Edit</button>'+
-							'<button style="background-color: red;" onclick="deleteTicket('+value.id+')">Delete</button>'+
+							'<button style="background-color: red; color: white;" onclick="deleteTicket('+value.id+')">Delete</button>'+
 							'<button style="background-color:lightgreen;" onclick="downloadTicket('+value.id+')">Download</button>'+
 							'<button style="background-color:cyan;" onclick="sendTicketEmail('+value.id+')">Send Email</button>'
 							'</td></tr>';
@@ -128,7 +134,6 @@
 					$("#status").prop("selectedIndex", 0);
 					
 					alert("Ticket updated");
-
 		            $("#get").click();
 		        }
 		    });
@@ -143,7 +148,7 @@
 	        $("#title").val(ticket.title);
 	        $("#description").val(ticket.description);
 			$("#createdBy").val(ticket.createdBy.id);
-			$("#assignee").val(ticket.assignee.id);
+			$("#assignee").val(ticket.assignee ? ticket.assignee.id : "");
 			$("#priority").val(ticket.priority);
 			$("#status").val(ticket.status);
 			$("#category").val(ticket.category);
@@ -186,46 +191,48 @@
 </script>
 </head>
 <body>
-<h1>Tickets Page</h1>
-<input type="hidden" id="ticketId">
-Title: <input type="text" id="title"></br></br>
-Description: <input type="text" id="description"></br></br>
-Created By:
-<select id="createdBy">
-	<option value="" disabled selected>Select Employee</option>
-</select></br></br>
-Assignee:
-<select id="assignee">
-	<option value="" disabled selected>Select Employee</option>
-</select></br></br>
-Priority:
-<select id="priority">
-	<option value="" disabled selected>Select Priority</option>
-    <option value="LOW">LOW</option>
-    <option value="MEDIUM">MEDIUM</option>
-    <option value="HIGH">HIGH</option>
-</select><br></br>
-Status:
-<select id="status">
-	<option value="" disabled selected>Select Status</option>
-    <option value="OPEN">OPEN</option>
-    <option value="PENDING_APPROVAL">PENDING APPROVAL</option>
-    <option value="APPROVED">APPROVED</option>
-    <option value="REJECTED">REJECTED</option>
-    <option value="ASSIGNED">ASSIGNED</option>
-    <option value="RESOLVED">RESOLVED</option>
-    <option value="CLOSED">CLOSED</option>
-    <option value="REOPENED">REOPENED</option>
-</select><br></br>
-Category: <input type="text" id="category"></br></br>
-File Attachment Path: <input type="text" id="fileAttachmentPath"></br></br>
+	<div class="ticket-form">
+		<h1>Tickets Page</h1>
+		<input type="hidden" id="ticketId">
+		Title: <input type="text" id="title"></br></br>
+		Description: <input type="text" id="description"></br></br>
+		Created By:
+		<select id="createdBy">
+			<option value="" disabled selected>Select Employee</option>
+		</select></br></br>
+		Assignee:
+		<select id="assignee">
+			<option value="" disabled selected>Select Employee</option>
+		</select></br></br>
+		Priority:
+		<select id="priority">
+			<option value="" disabled selected>Select Priority</option>
+		    <option value="LOW">LOW</option>
+		    <option value="MEDIUM">MEDIUM</option>
+		    <option value="HIGH">HIGH</option>
+		</select><br></br>
+		Status:
+		<select id="status">
+			<option value="" disabled selected>Select Status</option>
+		    <option value="OPEN">OPEN</option>
+		    <option value="PENDING_APPROVAL">PENDING APPROVAL</option>
+		    <option value="APPROVED">APPROVED</option>
+		    <option value="REJECTED">REJECTED</option>
+		    <option value="ASSIGNED">ASSIGNED</option>
+		    <option value="RESOLVED">RESOLVED</option>
+		    <option value="CLOSED">CLOSED</option>
+		    <option value="REOPENED">REOPENED</option>
+		</select><br></br>
+		Category: <input type="text" id="category"></br></br>
+		File Attachment Path: <input type="text" id="fileAttachmentPath"></br></br>
+		
+		<input style="background-color: green; color: white;" type="button" value="Get" id="get">
+		<input style="background-color: orangered; color: white;" type="button" value="Save" id="save">
+		<input style="background-color: blue; color: white;" type="button" value="Update" id="update"></br></br>
+	</div>
+	<table border="1">
+		<tr><th>ID</th><th>Title</th><th>Description</th><th>Priority</th><th>Status</th><th>Creation Date</th><th>Category</th><th>File Attachment Path</th><th>Created By</th><th>Assignee</th></tr>	
+	</table>
 
-<input style="background-color: green; color: white;" type="button" value="Get" id="get">
-<input style="background-color: orangered; color: white;" type="button" value="Save" id="save">
-<input style="background-color: blue; color: white;" type="button" value="Update" id="update"></br></br>
-
-<table border="1">
-	<tr><th>ID</th><th>Title</th><th>Description</th><th>Priority</th><th>Status</th><th>Creation Date</th><th>Category</th><th>File Attachment Path</th><th>Created By</th><th>Assignee</th></tr>	
-</table>
 </body>
 </html>
