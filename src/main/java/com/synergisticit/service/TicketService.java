@@ -72,6 +72,7 @@ public class TicketService {
 	    
 	    if(saved.getAssignee() != null) {
 
+	    	addHistory(saved, ActionType.CREATED, saved.getCreatedBy(), "Ticket created");
 	        addHistory(saved, ActionType.ASSIGNED, saved.getCreatedBy(), "Ticket assigned to " +saved.getAssignee().getName());
 
 	    } else {
@@ -272,7 +273,7 @@ public class TicketService {
 		    MimeMessage message = mailSender.createMimeMessage();
 		    MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-		    helper.setTo(ticket.getCreatedBy().getEmail()); // or assignee email
+		    helper.setTo("vardgesgharibyan777@gmail.com");              // or assignee email
 		    helper.setSubject("Ticket Details - " + ticket.getId());
 		    helper.setText("Please find ticket details attached.");
 

@@ -2,8 +2,10 @@ package com.synergisticit.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.synergisticit.model.Employee;
@@ -30,6 +32,10 @@ public class EmployeeService {
 	@Autowired
 	private TicketHistoryRepository ticketHistoryRepository;
 	
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+	
+	
 	public EmployeeService() {}
 	
     public Employee createEmployee(Employee employee) {
@@ -38,6 +44,7 @@ public class EmployeeService {
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
         employee.setRoles(new ArrayList<>(List.of(role)));
+        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
     	
         return employeeRepository.save(employee);
     }
@@ -60,7 +67,11 @@ public class EmployeeService {
 
         existingEmployee.setName(updatedEmployee.getName());
         existingEmployee.setEmail(updatedEmployee.getEmail());
-        existingEmployee.setPassword(updatedEmployee.getPassword());
+        
+        if(updatedEmployee.getPassword() != null && !updatedEmployee.getPassword().isBlank()) {
+
+        	existingEmployee.setPassword(passwordEncoder.encode( updatedEmployee.getPassword()));
+        }
         existingEmployee.setDepartment(updatedEmployee.getDepartment());
         existingEmployee.setProject(updatedEmployee.getProject());
         existingEmployee.setManagerId(updatedEmployee.getManagerId());
