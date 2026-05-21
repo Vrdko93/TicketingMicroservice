@@ -1,179 +1,332 @@
 <html>
 <head>
-	<style>
-		button {
-		    cursor: pointer;
-		}
-		input[type="button"] {
-		    cursor: pointer;
-		}
-	</style>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<meta charset="UTF-8">
+
+<title>Employees Page</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 40px;
+        background-color: rgb(83, 107, 172);
+        font-family: Arial, sans-serif;
+        color: #333;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .employee-form {
+        max-width: 1100px;
+        margin: auto;
+        background-color: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        margin-bottom: 30px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        margin-bottom: 18px;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        box-sizing: border-box;
+        font-size: 15px;
+    }
+
+    input[type="button"] {
+        cursor: pointer;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: bold;
+        margin-right: 10px;
+        margin-top: 10px;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    input[type="button"]:hover {
+        opacity: 0.9;
+        transform: scale(1.03);
+    }
+
+    #get {
+        background-color: green;
+        color: white;
+    }
+
+    #save {
+        background-color: orangered;
+        color: white;
+    }
+
+    #update {
+        background-color: blue;
+        color: white;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    th {
+        background-color: #333;
+        color: white;
+        padding: 14px;
+		text-align: left;
+    }
+
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover td {
+        background-color: #f1f1f1;
+    }
+
+    .action-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        margin: 2px;
+    }
+
+    .edit-btn {
+        background-color: orange;
+    }
+
+    .delete-btn {
+        background-color: red;
+        color: white;
+    }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <script>
-	$(document).ready(function() {
-		$.get("/roles", function(data) {
+    $(document).ready(function() {
 
-		    $.each(data, function(i, role) {
+        $.get("/roles", function(data) {
 
-		        $("#role").append(
-		            `<option value="${role.id}">
-		                ${role.name}
-		            </option>`
-		        );
-			});
-		});
-		$("#save").click(function () {
-			$.ajax({
-				url: "/employees",
-				type: "POST",
-				contentType: "application/json",
-				data: JSON.stringify({
-					"name": $("#name").val(),
-					"email": $("#email").val(),
-					"password": $("#password").val(),
-					"roleId": $("#role").val(),
-					"department": $("#department").val(),
-					"project": $("#project").val(),
-					"managerId": $("#managerId").val()
-				}),
-				success: function (response) {
+            $.each(data, function(i, role) {
+
+                $("#role").append(
+                    `<option value="${role.id}">
+                        ${role.name}
+                    </option>`
+                );
+            });
+        });
+
+        $("#save").click(function () {
+
+            $.ajax({
+                url: "/employees",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    "name": $("#name").val(),
+                    "email": $("#email").val(),
+                    "password": $("#password").val(),
+                    "roleId": $("#role").val(),
+                    "department": $("#department").val(),
+                    "project": $("#project").val(),
+                    "managerId": $("#managerId").val()
+                }),
+                success: function () {
+
+                    $("#name").val("");
+                    $("#email").val("");
+                    $("#password").val("");
+                    $("#role").prop("selectedIndex", 0);
+                    $("#department").val("");
+                    $("#project").val("");
+                    $("#managerId").val("");
+
+                    alert("Employee created");
+                    $("#get").click();
+                }
+            });
+        });
+
+        $("#get").click(function () {
+
+            $.ajax({
+                url: "/employees",
+                type: "GET",
+
+                success: function (response) {
+
+                    $("table tr:not(:first)").remove();
+
+                    $.each(response, function(key, value) {
+
+                        var row =
+                            '<tr>' +
+                                '<td>' + value.id + '</td>' +
+                                '<td>' + value.name + '</td>' +
+                                '<td>' + value.email + '</td>' +
+                                '<td>' +
+                                    (value.roles && value.roles.length > 0
+                                        ? value.roles.map(r => r.name).join(", ")
+                                        : "") +
+                                '</td>' +
+                                '<td>' + value.department + '</td>' +
+                                '<td>' + value.project + '</td>' +
+                                '<td>' + value.managerId + '</td>' +
+                                '<td>' +
+                                    '<button class="action-btn edit-btn" onclick="editEmployee(' + value.id + ')">Edit</button>' +
+                                    '<button class="action-btn delete-btn" onclick="deleteEmployee(' + value.id + ')">Delete</button>' +
+                                '</td>' +
+                            '</tr>';
+
+                        $("table").append(row);
+                    });
 					
-					// Clear text inputs
-					$("#name").val("");
-					$("#email").val("");
-					$("#password").val("");
-					$("#role").prop("selectedIndex", 0);
-					$("#department").val("");
-					$("#project").val("");
-					$("#managerId").val("");
-					
-					alert("Employee created");
-					$("#get").click();
-				},
-				error: function (xhr, status, error) {
-					console.log("error");
-				}
-			});
-		});
-		$("#get").click(function () {
-			$.ajax({
-				url: "/employees",
-				type: "GET",
-		
-				success: function (response) {
-					
-					// 🔥 Clear old rows first
-					$("table tr:not(:first)").remove();
-					
-					$.each(response, function(key, value) {
-						var row = '<tr><td>'+value.id+'</td><td>'+value.name+
-							'</td><td>'+value.email+'</td><td>'+						
-							(value.roles && value.roles.length > 0 ? value.roles.map(r => r.name).join(", "): "")+
-							'</td><td>'+value.department+'</td><td>'+value.project+'</td><td>'+value.managerId+
-							'</td><td>'+'<button style="background-color: orange;" onclick="editEmployee('+value.id+')">Edit</button>'+
-							'<button style="background-color: red; color: white;" onclick="deleteEmployee('+value.id+')">Delete</button>'+'</td></tr>';
-						$("table").append(row);
+					// scroll to top of table after loading data
+					$("table")[0].scrollIntoView({
+					    behavior: "smooth",
+					    block: "start"
 					});
-	
-				},
-				error: function (xhr, status, error) {
-					console.log("error");
-				}
+                }
+            });
+        });
+
+        $("#update").click(function () {
+
+            var id = $("#employeeId").val();
+
+            $.ajax({
+
+                url: "/employees/" + id,
+                type: "PUT",
+                contentType: "application/json",
+
+                data: JSON.stringify({
+                    "name": $("#name").val(),
+                    "email": $("#email").val(),
+                    "password": $("#password").val(),
+                    "roleId": $("#role").val(),
+                    "department": $("#department").val(),
+                    "project": $("#project").val(),
+                    "managerId": $("#managerId").val()
+                }),
+
+                success: function () {
+
+                    $("#name").val("");
+                    $("#email").val("");
+                    $("#password").val("");
+                    $("#role").prop("selectedIndex", 0);
+                    $("#department").val("");
+                    $("#project").val("");
+                    $("#managerId").val("");
+
+                    alert("Employee updated");
+                    $("#get").click();
+                }
+            });
+        });
+
+    });
+
+    function editEmployee(id) {
+
+        $.get("/employees/" + id, function(employee) {
+
+            $("#employeeId").val(employee.id);
+            $("#name").val(employee.name);
+            $("#email").val(employee.email);
+            $("#password").val("");
+
+            if(employee.roles && employee.roles.length > 0) {
+                $("#role").val(employee.roles[0].id);
+            }
+
+            $("#department").val(employee.department);
+            $("#project").val(employee.project);
+            $("#managerId").val(employee.managerId);
+			
+			// move page to top
+			window.scrollTo({
+			    top: 0,
+			    behavior: "smooth"
 			});
-		});
-		$("#update").click(function () {
+        });
+    }
 
-		    var id = $("#employeeId").val();
+    function deleteEmployee(id) {
 
-		    $.ajax({
-
-		        url: "/employees/" + id,
-		        type: "PUT",
-		        contentType: "application/json",
-
-		        data: JSON.stringify({
-
-		            "name": $("#name").val(),
-		            "email": $("#email").val(),
-					"password": $("#password").val(),
-					"roleId": $("#role").val(),
-		            "department": $("#department").val(),
-		            "project": $("#project").val(),
-					"managerId": $("#managerId").val()
-		        }),
-
-		        success: function () {
-		            
-					// Clear text inputs
-					$("#name").val("");
-					$("#email").val("");
-					$("#password").val("");
-					$("#role").prop("selectedIndex", 0);
-					$("#department").val("");
-					$("#project").val("");
-					$("#managerId").val("");
-					
-					alert("Employee updated");
-		            $("#get").click();
-		        }
-		    });
-		});					
-	});
-	
-	function editEmployee(id) {
-
-	    $.get("/employees/" + id, function(employee) {
-
-	        $("#employeeId").val(employee.id);
-	        $("#name").val(employee.name);
-	        $("#email").val(employee.email);
-			$("#password").val("");
-			
-			if(employee.roles && employee.roles.length > 0) {
-
-			    $("#role").val(employee.roles[0].id);
-			}
-			
-			$("#department").val(employee.department);
-			$("#project").val(employee.project);
-			$("#managerId").val(employee.managerId);
-	    });
-	}
-	function deleteEmployee(id) {
-
-	    $.ajax({
-	        url: "/employees/" + id,
-	        type: "DELETE",
-
-	        success: function() {
-
-				alert("Employee deleted");
-	            $("#get").click();
-	        }
-	    });
-	}
+        $.ajax({
+            url: "/employees/" + id,
+            type: "DELETE",
+            success: function() {
+                alert("Employee deleted");
+                $("#get").click();
+            }
+        });
+    }
 </script>
 </head>
+
 <body>
-<h1>Employees Page</h1>
-<input type="hidden" id="employeeId">
-Name: <input type="text" id="name"></br></br>
-Email: <input type="text" id="email"></br></br>
-Password: <input type="password" id="password"></br></br>
-Role:
-<select id="role">
-    <option value="" disabled selected>Select Role</option>
-</select></br></br>
-Department: <input type="text" id="department"></br></br>
-Project: <input type="text" id="project"></br></br>
-Manager ID: <input type="text" id="managerId"></br></br>
 
-<input style="background-color: green; color: white;" type="button" value="Get" id="get">
-<input style="background-color: orangered; color: white;" type="button" value="Save" id="save">
-<input style="background-color: blue; color: white;" type="button" value="Update" id="update"></br></br>
+	<div class="employee-form">
+		
+		<h1>Employees Page</h1>
+		<input type="hidden" id="employeeId">
+		
+		Name: <input type="text" id="name">
+		
+		Email: <input type="text" id="email">
+		
+		Password: <input type="password" id="password">
+		
+		Role:
+		<select id="role">
+		    <option value="" disabled selected>Select Role</option>
+		</select>
+		
+		Department: <input type="text" id="department">
+		
+		Project: <input type="text" id="project">
+		
+		Manager ID: <input type="text" id="managerId">
+		
+		<input type="button" value="Get" id="get">
+		<input type="button" value="Save" id="save">
+		<input type="button" value="Update" id="update">
+	
+	</div>
+	
+	<table>
+	    <tr>
+	        <th>ID</th>
+	        <th>Name</th>
+	        <th>Email</th>
+	        <th>Role</th>
+	        <th>Department</th>
+	        <th>Project</th>
+	        <th>Manager ID</th>
+	        <th>Actions</th>
+	    </tr>
+	</table>
 
-<table border="1">
-	<tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Project</th><th>Manager ID</th></tr>	
-</table>
 </body>
 </html>

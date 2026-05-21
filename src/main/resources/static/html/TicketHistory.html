@@ -1,42 +1,136 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<style>
-		input[type="button"] {
-		    cursor: pointer;
-		}
-	</style>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ticket History Page</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 40px;
+        background-color: rgb(83, 107, 172);
+        font-family: Arial, sans-serif;
+        color: #333;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .container {
+        max-width: 1100px;
+        margin: auto;
+        background-color: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    input[type="button"] {
+        cursor: pointer;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 12px;
+        background-color: #28a745;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.2s ease;
+        margin-bottom: 20px;
+    }
+
+    input[type="button"]:hover {
+        background-color: #218838;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    th {
+        background-color: #333;
+        color: white;
+        padding: 14px;
+        text-align: left;
+    }
+
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        background-color: white;
+    }
+
+    tr:hover td {
+        background-color: #f1f1f1;
+    }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <script>
-	$(document).ready(function() {
-		$("#get").click(function () {
-			$.ajax({
-				url: "/history",
-				type: "GET",
-		
-				success: function (response) {
-					
-					// 🔥 Clear old rows first
-					$("table tr:not(:first)").remove();
-					
-					$.each(response, function(key, value) {
-						var row = '<tr><td>'+value.id+'</td><td>'+value.action+'</td><td>'+value.actionDate+'</td><td>'+value.comments+'</td><td>'+value.ticketId+'</td><td>'+(value.actionBy ? value.actionBy.name : '')+'</td></tr>';
-						$("table").append(row);
-					});
-	
-				},
-				error: function (xhr, status, error) {
-					console.log("error");
-				}
-			});
-		});			
-	});
+    $(document).ready(function() {
+        $("#get").click(function () {
+            $.ajax({
+                url: "/history",
+                type: "GET",
+
+                success: function (response) {
+
+                    // Clear old rows first
+                    $("table tr:not(:first)").remove();
+
+                    $.each(response, function(key, value) {
+
+                        var row =
+                            '<tr>' +
+                                '<td>' + value.id + '</td>' +
+                                '<td>' + value.action + '</td>' +
+                                '<td>' + value.actionDate + '</td>' +
+                                '<td>' + value.comments + '</td>' +
+                                '<td>' + value.ticketId + '</td>' +
+                                '<td>' + (value.actionBy ? value.actionBy.name : '') + '</td>' +
+                            '</tr>';
+
+                        $("table").append(row);
+                    });
+
+                },
+
+                error: function (xhr, status, error) {
+                    console.log("error");
+                }
+            });
+        });
+    });
 </script>
 </head>
+
 <body>
-<h1>Ticket History Page</h1>
-<input style="background-color: green; color: white;" type="button" value="Get" id="get"></br></br>
-<table border="1">
-	<tr><th>ID</th><th>Action</th><th>ActionDate</th><th>Comments</th><th>Ticket ID</th><th>Action By</th></tr>	
-</table>
+
+<div class="container">
+
+    <h1>Ticket History Page</h1>
+
+    <input type="button" value="Get Ticket History" id="get">
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Action</th>
+            <th>Action Date</th>
+            <th>Comments</th>
+            <th>Ticket ID</th>
+            <th>Action By</th>
+        </tr>
+    </table>
+
+</div>
+
 </body>
 </html>
