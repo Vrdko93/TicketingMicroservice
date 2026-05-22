@@ -173,6 +173,11 @@
                     alert("Ticket created");
 
                     $("#get").click();
+					
+					window.scrollTo({
+					    top: document.body.scrollHeight,
+					    behavior: "smooth"
+					});
                 },
 
                 error: function () {
@@ -304,9 +309,21 @@
                 alert("Ticket deleted");
 
                 $("#get").click();
-            }
-        });
-    }
+            },
+			
+			 error: function(xhr) {
+
+			        if(xhr.status === 403) {
+
+			            alert("You're not authorized to delete a ticket.");
+			        }
+			        else {
+
+			            alert("Something went wrong");
+			        }
+			    }
+			});
+        }
 
     function downloadTicket(id) {
 

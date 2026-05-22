@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,7 @@ public class EmployeeService {
 	
 	public EmployeeService() {}
 	
+	@PreAuthorize("hasRole('ADMIN')")
     public Employee createEmployee(Employee employee) {
     	
         Role role = roleRepository.findById(employee.getRoleId())
@@ -55,11 +57,13 @@ public class EmployeeService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public List<Employee> getAllEmployees() {
     	
         return employeeRepository.findAll();
     }
     
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public Employee updateEmployee(Long id, Employee updatedEmployee) {
 
         Employee existingEmployee = employeeRepository.findById(id)
@@ -70,7 +74,7 @@ public class EmployeeService {
         
         if(updatedEmployee.getPassword() != null && !updatedEmployee.getPassword().isBlank()) {
 
-        	existingEmployee.setPassword(passwordEncoder.encode( updatedEmployee.getPassword()));
+        	existingEmployee.setPassword(passwordEncoder.encode(updatedEmployee.getPassword()));
         }
         existingEmployee.setDepartment(updatedEmployee.getDepartment());
         existingEmployee.setProject(updatedEmployee.getProject());
@@ -88,6 +92,7 @@ public class EmployeeService {
         return employeeRepository.save(existingEmployee);
     }
     
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteEmployee(Long id) {
     	
         Employee employee = employeeRepository.findById(id)

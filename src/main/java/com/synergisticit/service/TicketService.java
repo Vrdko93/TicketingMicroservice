@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.itextpdf.text.Document;
@@ -41,6 +42,7 @@ public class TicketService {
 
 	public TicketService() {}
 	
+	@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
 	public Ticket createTicket(Ticket ticket) {
 		
 		// Created By
@@ -83,6 +85,7 @@ public class TicketService {
 	    return saved;
 	}
 	
+	@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public Ticket updateTicket(Long id, Ticket updatedTicket) {
 
         Ticket existingTicket = ticketRepository.findById(id)
@@ -157,6 +160,7 @@ public class TicketService {
         return updatedTicket;
     }
 	
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public void deleteTicket(Long id) {
 
         Ticket ticket = ticketRepository.findById(id)
@@ -165,6 +169,7 @@ public class TicketService {
         ticketRepository.delete(ticket);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
 	public Ticket assignTicket(Long ticketId, Long employeeId) {
 
 	    Ticket ticket = getTicketById(ticketId);

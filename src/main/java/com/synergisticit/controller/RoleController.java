@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,4 +58,10 @@ public class RoleController {
 		
 	    return ResponseEntity.ok("Role deleted");
 	}
+	
+    @GetMapping("/current-roles")
+    public List<String> currentRoles(Authentication authentication) {
+
+        return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+    }
 }

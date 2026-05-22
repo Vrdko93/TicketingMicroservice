@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +17,7 @@ import com.synergisticit.service.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -29,18 +31,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-
         http
             .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(auth -> auth
-
-                .requestMatchers("/employee.html").hasRole("ADMIN")
+            		
+            	.requestMatchers("/html/employee.html")
+                    .hasAnyRole("ADMIN", "MANAGER")
 
                 .requestMatchers("/tickets/**")
-                .hasAnyRole("ADMIN", "USER")
+                    .hasAnyRole("ADMIN", "MANAGER", "USER")
 
-                .anyRequest().authenticated()
+                .requestMatchers("/html/**")
+                    .authenticated()
+
+                .anyRequest()
+                    .permitAll()
             )
 
             .formLogin(form -> form

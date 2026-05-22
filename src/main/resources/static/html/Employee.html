@@ -161,7 +161,18 @@
 
                     alert("Employee created");
                     $("#get").click();
-                }
+                },
+				
+				error: function(xhr) {
+
+				    if (xhr.status === 403) {
+
+				        alert("You're not authorized to create an employee.");
+				    } else {
+
+				        alert("Something went wrong");
+				    }
+				}
             });
         });
 
@@ -276,10 +287,23 @@
         $.ajax({
             url: "/employees/" + id,
             type: "DELETE",
+			
             success: function() {
+				
                 alert("Employee deleted");
                 $("#get").click();
-            }
+            },
+			
+			error: function(xhr) {
+
+			    if (xhr.status === 403) {
+
+			        alert("You're not authorized to delete an employee.");
+			    } else {
+
+			        alert("Something went wrong");
+			    }
+			}
         });
     }
 </script>

@@ -70,6 +70,7 @@
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
     }
   </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
 
@@ -82,7 +83,7 @@
       Tickets Page
     </div>
 
-    <div class="card" onclick="window.location.href='http://localhost:8080/html/employee.html'">
+    <div class="card" id="employeeButton">
       Employees Page
     </div>
 
@@ -92,24 +93,45 @@
   </div>
 
   <script>
-    async function logout() {
-      try {
-        const response = await fetch('http://localhost:8080/logout', {
-          method: 'POST',
-          credentials: 'include'
-        });
+      async function logout() {
+    	try {
+	        const response = await fetch('http://localhost:8080/logout', {
+	          method: 'POST',
+	          credentials: 'include'
+	        });
 
-        if (response.ok) {
-          //alert('Logged out successfully.');
-          window.location.href = 'http://localhost:8080/';
-        } else {
-          alert('Logout failed.');
-        }
-      } catch (error) {
-        console.error('Error during logout:', error);
-        alert('An error occurred during logout.');
+	        if (response.ok) {
+				
+	        	window.location.href = 'http://localhost:8080/login';
+	        } else {
+				
+	            alert('Logout failed.');
+	        }
+      	} catch (error) {
+		
+	        console.error('Error during logout:', error);
+	        alert('An error occurred during logout.');
       }
     }
+	
+	$(document).ready(function() {
+	
+		$("#employeeButton").click(function() {
+	
+		    $.get("/current-roles", function(roles) {
+	
+				if(roles.includes("ROLE_ADMIN") || roles.includes("ROLE_MANAGER")) {
+	
+				     window.location.href = "/html/employee.html";
+				}
+				else {
+	
+				     alert("You're not authorized to access this page.");
+				    }
+				});
+			});
+	});
+	
   </script>
 
 </body>
