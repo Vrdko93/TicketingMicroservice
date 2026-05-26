@@ -61,13 +61,8 @@ public class TicketService {
 	                        new RuntimeException("Assignee not found"));
 
 	        ticket.setAssignee(assignee);
-	        ticket.setStatus(TicketStatus.ASSIGNED);
 	    }
-	    else {
 
-	    	ticket.setStatus(TicketStatus.OPEN);
-
-	    }
 	    ticket.setCreationDate(LocalDateTime.now());
 	    
 	    Ticket saved = ticketRepository.save(ticket);
@@ -94,7 +89,6 @@ public class TicketService {
         existingTicket.setTitle(updatedTicket.getTitle());
         existingTicket.setDescription(updatedTicket.getDescription());
         existingTicket.setPriority(updatedTicket.getPriority());
-        existingTicket.setStatus(updatedTicket.getStatus());
         existingTicket.setCategory(updatedTicket.getCategory());
         existingTicket.setFileAttachmentPath(updatedTicket.getFileAttachmentPath());
 
@@ -115,49 +109,65 @@ public class TicketService {
                     .findById(updatedTicket.getAssigneeId())
                     .orElseThrow(() -> new RuntimeException("Assignee not found"));
 
-            existingTicket.setAssignee(assignee);
+            if (existingTicket.getAssignee() == null || !assignee.getName().equals(existingTicket.getAssignee().getName())) {
+            		 
+            	existingTicket.setAssignee(assignee);
+            	addHistory(existingTicket, ActionType.ASSIGNED, existingTicket.getCreatedBy(), "Ticket assigned to " + existingTicket.getAssignee().getName());	           
+            }
         }
         
-        Ticket updated = ticketRepository.save(existingTicket);
         
-        ActionType actionType = null;
+        if (updatedTicket.getStatus() != existingTicket.getStatus()) {
+        	
+        	existingTicket.setStatus(updatedTicket.getStatus());
+        	
+            ActionType actionType = null;
 
-        switch(updated.getStatus()) {
+            switch(updatedTicket.getStatus()) {
+            
+            	case OPEN:
+	                actionType = ActionType.OPEN;
+	                break;
+                
+            	case PENDING_APPROVAL:
+	                actionType = ActionType.PENDING_APPROVAL;
+	                break;
 
-            case APPROVED:
-                actionType = ActionType.APPROVED;
-                break;
+                case APPROVED:
+                    actionType = ActionType.APPROVED;
+                    break;
 
-            case REJECTED:
-                actionType = ActionType.REJECTED;
-                break;
+                case REJECTED:
+                    actionType = ActionType.REJECTED;
+                    break;
 
-            case ASSIGNED:
-                actionType = ActionType.ASSIGNED;
-                break;
+                case ASSIGNED:
+                    actionType = ActionType.ASSIGNED;
+                    break;
 
-            case RESOLVED:
-                actionType = ActionType.RESOLVED;
-                break;
+                case RESOLVED:
+                    actionType = ActionType.RESOLVED;
+                    break;
 
-            case CLOSED:
-                actionType = ActionType.CLOSED;
-                break;
+                case CLOSED:
+                    actionType = ActionType.CLOSED;
+                    break;
 
-            case REOPENED:
-                actionType = ActionType.REOPENED;
-                break;
+                case REOPENED:
+                    actionType = ActionType.REOPENED;
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
+            
+            if(actionType != null) {
+
+                addHistory(existingTicket, actionType, existingTicket.getAssignee(), "Ticket status changed to " + existingTicket.getStatus().name().replace("_", " "));
+            }
         }
-        
-        if(actionType != null) {
 
-            addHistory(updated, actionType, updated.getAssignee(), "Ticket status changed to " + updated.getStatus());
-        }
-
-        return updatedTicket;
+        return ticketRepository.save(existingTicket);
     }
 	
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")

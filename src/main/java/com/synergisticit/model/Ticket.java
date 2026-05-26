@@ -19,6 +19,7 @@ import java.util.List;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.synergisticit.enums.Priority;
 import com.synergisticit.enums.TicketStatus;
@@ -55,6 +56,7 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private TicketStatus status;            // OPEN, PENDING_APPROVAL, APPROVED, REJECTED, ASSIGNED, RESOLVED, CLOSED, REOPENED
     
+    @JsonFormat(pattern = "MM-dd-yyyy hh:mm a")
     private LocalDateTime creationDate;
     private String category;
     private String fileAttachmentPath;

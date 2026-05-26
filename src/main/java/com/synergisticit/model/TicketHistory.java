@@ -6,9 +6,11 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.synergisticit.enums.ActionType;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -36,6 +38,7 @@ public class TicketHistory {
     private Long ticketId;
     
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
 	private ActionType action;      // CREATED, APPROVED, REJECTED, ASSIGNED, RESOLVED, CLOSED, REOPENED
     
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -43,6 +46,7 @@ public class TicketHistory {
 	@OnDelete(action = OnDeleteAction.SET_NULL)
 	private Employee actionBy;
 	
+	@JsonFormat(pattern = "MM-dd-yyyy hh:mm a")
 	private LocalDateTime actionDate;
 	private String comments;
 

@@ -90,7 +90,7 @@
                         var row =
                             '<tr>' +
                                 '<td>' + value.id + '</td>' +
-                                '<td>' + value.action + '</td>' +
+                                '<td>' + value.action.replaceAll("_", " ") + '</td>' +
                                 '<td>' + value.actionDate + '</td>' +
                                 '<td>' + value.comments + '</td>' +
                                 '<td>' + value.ticketId + '</td>' +
