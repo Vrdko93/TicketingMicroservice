@@ -90,7 +90,9 @@
                         var row =
                             '<tr>' +
                                 '<td>' + value.id + '</td>' +
-                                '<td>' + value.action.replaceAll("_", " ") + '</td>' +
+                                '<td style="background-color:' + getStatusColor(value.action) + '; color:black; font-weight:bold; text-align:center;">'
+									   + value.action.replaceAll("_", " ") + 
+								'</td>' +
                                 '<td>' + value.actionDate + '</td>' +
                                 '<td>' + value.comments + '</td>' +
                                 '<td>' + value.ticketId + '</td>' +
@@ -108,6 +110,39 @@
             });
         });
     });
+	
+	function getStatusColor(status) {
+
+	    switch(status) {
+
+			case "CREATED":
+			    return "#3498db";
+				
+			case "ASSIGNED":
+				return "purple";
+
+			case "PENDING_APPROVAL":
+			    return "#f39c12";
+
+			case "APPROVED":
+			    return "#27ae60";
+
+			case "REJECTED":
+			    return "#e74c3c";
+
+			case "RESOLVED":
+			    return "brown";
+
+			case "CLOSED":
+			    return "#7f8c8d";
+				
+			case "REOPENED":
+				return "#f1c40f";
+
+			default:
+			    return "#95a5a6";
+	    }
+	}
 </script>
 </head>
 

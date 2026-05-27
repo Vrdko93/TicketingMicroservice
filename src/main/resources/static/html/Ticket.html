@@ -203,8 +203,11 @@
                                 '<td>' + value.id + '</td>' +
                                 '<td>' + value.title + '</td>' +
                                 '<td>' + value.description + '</td>' +
-                                '<td>' + value.priority + '</td>' +
-                                '<td>' + value.status.replaceAll("_", " ") + '</td>' +
+                                '<td style="background-color:' + getPriorityColor(value.priority) + '; color:black; font-weight:bold; text-align:center;">'
+								    + value.priority + '</td>' +
+                                '<td style="background-color:' + getStatusColor(value.status) + '; color:black; font-weight:bold; text-align:center;">'
+								    + value.status.replaceAll("_", " ")
+								+ '</td>' +
                                 '<td>' + value.creationDate + '</td>' +
                                 '<td>' + value.category + '</td>' +
                                 '<td>' + value.fileAttachmentPath + '</td>' +
@@ -345,6 +348,57 @@
             }
         });
     }
+	
+	function getStatusColor(status) {
+
+	    switch(status) {
+
+	        case "OPEN":
+	            return "#3498db";
+				
+			case "ASSIGNED":
+				return "purple";
+
+	        case "PENDING_APPROVAL":
+	            return "#f39c12";
+
+	        case "APPROVED":
+	            return "#27ae60";
+
+	        case "REJECTED":
+	            return "#e74c3c";
+
+	        case "RESOLVED":
+	            return "brown";
+
+	        case "CLOSED":
+	            return "#7f8c8d";
+				
+			case "REOPENED":
+				return "#f1c40f";
+
+	        default:
+	            return "#95a5a6";
+	    }
+	}
+	
+	function getPriorityColor(priority) {
+
+	    switch(priority) {
+
+	        case "LOW":
+	            return "#2ecc71";
+
+	        case "MEDIUM":
+	            return "#f1c40f";
+
+	        case "HIGH":
+	            return "#e74c3c";
+
+	        default:
+	            return "#bdc3c7";
+	    }
+	}
 </script>
 </head>
 
