@@ -1,17 +1,11 @@
 package com.synergisticit.service;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
 import com.synergisticit.repository.PDFRepository;
-
-import jakarta.mail.MessagingException;
 
 @Service
 public class PDFService {

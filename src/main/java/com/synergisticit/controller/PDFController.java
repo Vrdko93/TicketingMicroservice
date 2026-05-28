@@ -27,7 +27,7 @@ public class PDFController {
 		try {
 
 			// Call service method
-	        String response = pdfService.generateAndSavePdf(content, pdfSavePath + "/demo.pdf");
+	        pdfService.generateAndSavePdf(content, pdfSavePath + "/demo.pdf");
 
 	        // Set response headers
 	        HttpHeaders headers = new HttpHeaders();
